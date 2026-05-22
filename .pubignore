@@ -1,0 +1,17 @@
+# Build artifacts / caches
+build/
+.dart_tool/
+
+# Local audit reports (generated, not part of the package)
+/audit-report.html
+/punjabi_phonics_audit-report.html
+*_audit-report.html
+
+# OS / editor noise
+.DS_Store
+.claude/
+.idea/
+.vscode/
+
+# Lockfile is not needed in the published archive
+pubspec.lock

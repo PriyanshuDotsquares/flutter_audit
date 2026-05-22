@@ -1,0 +1,19 @@
+# Dart / Flutter
+.dart_tool/
+.packages
+build/
+pubspec.lock
+
+# Generated audit reports (run locally; not version controlled)
+audit-report.html
+*_audit-report.html
+audit.json
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.iml
+
+# Claude Code workspace
+.claude/

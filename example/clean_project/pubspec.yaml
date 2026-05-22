@@ -1,0 +1,11 @@
+name: clean_project
+# Scan target for flutter_audit — NOT a runnable Flutter app.
+# Has no platform folders and no Flutter SDK dependency. `flutter run` will
+# not work here; use `dart run bin/flutter_audit.dart scan example/clean_project`
+# from the flutter_audit repo root.
+description: Audit scan target — clean code with no missing-const issues.
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"

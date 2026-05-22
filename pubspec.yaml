@@ -1,0 +1,28 @@
+name: flutter_audit
+description: >-
+  Static analysis CLI for Flutter projects. Audits performance, memory safety,
+  security, API hygiene, architecture, UI quality, and code quality in one shot.
+version: 1.0.1
+repository: https://github.com/PriyanshuDotsquares/flutter_audit
+issue_tracker: https://github.com/PriyanshuDotsquares/flutter_audit/issues
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+
+executables:
+  flutter_audit: flutter_audit
+
+dependencies:
+  analyzer: ^6.4.0
+  args: ^2.4.0
+  mason_logger: ^0.2.0
+  path: ^1.8.0
+
+dev_dependencies:
+  test: ^1.24.0
+  lints: ^3.0.0
+
+false_secrets:
+  - /example/issues_project/lib/services/auth_service.dart
+  - /example/issues_project_report.html
+  - /example/clean_project_report.html

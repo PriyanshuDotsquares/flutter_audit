@@ -1,0 +1,1417 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>issues_project — Flutter Audit Report</title>
+<style>
+:root {
+  --bg: #0f172a;
+  --panel: #ffffff;
+  --ink: #0f172a;
+  --muted: #475569;
+  --line: #e2e8f0;
+  --soft: #f8fafc;
+  --brand: #0d9488;
+  --crit: #b91c1c;
+  --crit-bg: #fef2f2;
+  --high: #c2410c;
+  --high-bg: #fff7ed;
+  --med:  #b45309;
+  --med-bg: #fffbeb;
+  --low:  #1d4ed8;
+  --low-bg: #eff6ff;
+  --good: #15803d;
+  --good-bg: #f0fdf4;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--ink);
+  background: linear-gradient(180deg, #0b1220 0, #111c31 340px, #f1f5f9 340px, #f1f5f9 100%);
+  min-height: 100vh;
+}
+.wrap { max-width: 1100px; margin: 0 auto; padding: 28px 24px 80px; }
+
+header.cover { color: #fff; padding: 8px 0 28px; }
+header.cover .eyebrow {
+  font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: #5eead4; font-weight: 700;
+}
+header.cover h1 {
+  font-size: 34px; line-height: 1.15; margin: 8px 0 6px;
+  font-weight: 800; letter-spacing: -0.02em;
+}
+header.cover .sub { color: #cbd5e1; font-size: 14px; }
+.meta-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 18px;
+}
+.meta {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px; padding: 10px 12px;
+}
+.meta .k { font-size: 11px; color: #94a3b8; letter-spacing: 0.08em; text-transform: uppercase; }
+.meta .v { font-size: 15px; font-weight: 700; color: #f8fafc; margin-top: 3px; }
+
+.card {
+  background: var(--panel);
+  border-radius: 14px;
+  box-shadow: 0 1px 2px rgba(15,23,42,0.04), 0 8px 30px rgba(15,23,42,0.06);
+  padding: 22px 24px;
+  margin: 18px 0;
+  border: 1px solid var(--line);
+}
+h2 {
+  font-size: 20px; margin: 0 0 4px; letter-spacing: -0.01em;
+  display: flex; align-items: center; gap: 10px;
+}
+h2 .num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 8px;
+  background: var(--brand); color: #fff; font-size: 13px; font-weight: 700;
+}
+h3 { font-size: 15px; margin: 18px 0 6px; color: var(--ink); }
+h3.cat-h3 {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 26px; border-top: 1px solid var(--line); padding-top: 18px;
+}
+h3.cat-h3:first-of-type { border-top: 0; padding-top: 0; }
+.cat-count {
+  font-size: 12px; color: var(--muted); font-weight: 500;
+}
+p.lead { color: var(--muted); margin: 0 0 10px; }
+
+.pill {
+  display: inline-block; padding: 2px 8px; border-radius: 999px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+}
+.pill.crit { color: var(--crit); background: var(--crit-bg); }
+.pill.high { color: var(--high); background: var(--high-bg); }
+.pill.med  { color: var(--med);  background: var(--med-bg); }
+.pill.low  { color: var(--low);  background: var(--low-bg); }
+.pill.good { color: var(--good); background: var(--good-bg); }
+
+.overall {
+  display: flex; align-items: center; gap: 20px; margin: 6px 0 4px;
+  padding: 16px 20px; background: var(--soft); border: 1px solid var(--line); border-radius: 12px;
+}
+.overall-num {
+  font-size: 56px; font-weight: 800; letter-spacing: -0.03em;
+  min-width: 110px; text-align: center;
+}
+.overall-num.a { color: #15803d; }
+.overall-num.b { color: #1d4ed8; }
+.overall-num.c { color: #b45309; }
+.overall-num.d { color: #b91c1c; }
+.overall-grade { font-size: 22px; font-weight: 800; letter-spacing: -0.01em; }
+.overall-label { font-size: 12px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+
+.kpi-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin: 6px 0 4px; }
+.kpi {
+  background: var(--soft); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px;
+}
+.kpi .n { font-size: 24px; font-weight: 800; }
+.kpi .n.crit { color: var(--crit); }
+.kpi .n.high { color: var(--high); }
+.kpi .n.med  { color: var(--med); }
+.kpi .n.low  { color: var(--low); }
+.kpi .lbl { font-size: 12px; color: var(--muted); }
+
+.scores { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-top: 8px; }
+.score {
+  text-align: center; padding: 14px 4px; border: 1px solid var(--line);
+  border-radius: 10px; background: var(--soft);
+}
+.score .grade { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+.score .num-small { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.score .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; }
+.score.a .grade { color: #15803d; }
+.score.b .grade { color: #1d4ed8; }
+.score.c .grade { color: #b45309; }
+.score.d .grade { color: #b91c1c; }
+
+table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 6px; }
+th, td { text-align: left; padding: 9px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th {
+  color: var(--muted); font-weight: 600; font-size: 11px; letter-spacing: 0.04em;
+  text-transform: uppercase; background: var(--soft);
+}
+td code, .path {
+  font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 12.5px;
+  color: #0f172a; background: #f1f5f9; padding: 1px 5px; border-radius: 4px;
+  word-break: break-all;
+}
+.msg { color: var(--ink); }
+.snippet code {
+  display: block; background: #0f172a; color: #e2e8f0; padding: 6px 10px;
+  border-radius: 6px; margin-top: 6px; white-space: pre-wrap; word-break: break-all;
+}
+.suggest { margin-top: 4px; color: var(--muted); font-size: 13px; }
+
+.top-list {
+  margin: 6px 0 0; padding-left: 22px; counter-reset: top;
+}
+.top-list li {
+  padding: 14px 0; border-top: 1px solid var(--line);
+}
+.top-list li:first-child { border-top: 0; padding-top: 4px; }
+.top-head { display: flex; gap: 10px; align-items: center; }
+.top-msg { margin-top: 4px; font-weight: 600; }
+.top-fix { margin-top: 6px; color: var(--muted); font-size: 13.5px; }
+pre {
+  background: #0f172a; color: #e2e8f0; padding: 10px 14px; border-radius: 8px;
+  overflow-x: auto; font: 12.5px/1.55 ui-monospace, Menlo, Consolas, monospace;
+  margin: 6px 0 0;
+}
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+ul.tight { margin: 6px 0 0; padding-left: 20px; }
+ul.tight li { margin: 4px 0; }
+
+.good-banner { color: var(--good); font-weight: 600; }
+
+.footer {
+  text-align: center; color: #94a3b8; font-size: 12px;
+  margin-top: 24px; padding-top: 16px;
+}
+.footnote { color: var(--muted); font-size: 12.5px; margin: 6px 0 0; }
+
+@media (max-width: 820px) {
+  .meta-grid, .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  .scores { grid-template-columns: repeat(3, 1fr); }
+  .grid2 { grid-template-columns: 1fr; }
+}
+@media print {
+  body { background: #fff; }
+  header.cover { color: #0f172a; }
+  .card { box-shadow: none; }
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="cover">
+  <div class="eyebrow">Flutter Audit Report</div>
+  <h1>issues_project</h1>
+  <div class="sub">Static audit covering performance, memory, security, API hygiene, architecture, UI and code quality.</div>
+  <div class="meta-grid">
+    <div class="meta"><div class="k">Project</div><div class="v">issues_project</div></div>
+    <div class="meta"><div class="k">Source size</div><div class="v">347 LOC · 7 files</div></div>
+    <div class="meta"><div class="k">Scan time</div><div class="v">124 ms</div></div>
+    <div class="meta"><div class="k">Date</div><div class="v">2026-05-21</div></div>
+  </div>
+</header>
+<div class="card">
+  <h2><span class="num">1</span> Executive summary</h2>
+  <p class="lead">
+    Scanned <strong>7</strong> files (347 LOC). Found <strong>100</strong> findings (2 CRITICAL, 8 ERROR, 71 WARNING, 19 INFO). Overall score is <strong>70 / 100 (fair)</strong>.
+  </p>
+
+  <h3>Overall grade</h3>
+  <div class="overall">
+    <div class="overall-num b">70</div>
+    <div class="overall-meta">
+      <div class="overall-grade">B-</div>
+      <div class="overall-label">FAIR</div>
+    </div>
+  </div>
+
+  <h3>Finding counts</h3>
+  <div class="kpi-row">
+    <div class="kpi"><div class="n crit">2</div><div class="lbl">Critical</div></div>
+    <div class="kpi"><div class="n high">8</div><div class="lbl">High</div></div>
+    <div class="kpi"><div class="n med">71</div><div class="lbl">Medium</div></div>
+    <div class="kpi"><div class="n low">19</div><div class="lbl">Low / Info</div></div>
+  </div>
+</div>
+<div class="card">
+  <h2><span class="num">2</span> Verdict by area</h2>
+  <p class="lead">Each category starts at 100 and loses 1 / 2 / 5 / 10 points per info / warning / error / critical finding.</p>
+  <div class="scores">
+        <div class="score a">
+      <div class="grade">A</div>
+      <div class="num-small">91 / 100</div>
+      <div class="label">Architecture</div>
+    </div>
+        <div class="score d">
+      <div class="grade">F</div>
+      <div class="num-small">0 / 100</div>
+      <div class="label">Performance</div>
+    </div>
+        <div class="score b">
+      <div class="grade">B</div>
+      <div class="num-small">75 / 100</div>
+      <div class="label">Memory</div>
+    </div>
+        <div class="score a">
+      <div class="grade">A-</div>
+      <div class="num-small">87 / 100</div>
+      <div class="label">UI Quality</div>
+    </div>
+        <div class="score a">
+      <div class="grade">A</div>
+      <div class="num-small">94 / 100</div>
+      <div class="label">API Hygiene</div>
+    </div>
+        <div class="score b">
+      <div class="grade">C+</div>
+      <div class="num-small">68 / 100</div>
+      <div class="label">Security</div>
+    </div>
+        <div class="score a">
+      <div class="grade">A</div>
+      <div class="num-small">94 / 100</div>
+      <div class="label">Code Quality</div>
+    </div>
+  </div>
+</div>
+<div class="card">
+  <h2><span class="num">3</span> Findings by category</h2>
+  <p class="lead">Every rule below produced at least one finding. Click a row to see the offending source line.</p>
+  <h3 class="cat-h3">Security <span class="cat-count">5 issues</span></h3>
+  <table>
+    <thead><tr><th>Severity</th><th>Rule</th><th>Location</th><th>Message</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="pill crit">CRITICAL</span></td>
+        <td><code>hardcoded_secret</code></td>
+        <td><code class="path">lib/services/auth_service.dart:5</code></td>
+        <td>
+          <div class="msg">Possible hardcoded secret in `apiKey`</div>
+          <div class="snippet"><code>static const String apiKey = 'sk_live_AKIA1234567890ABCDEFG';</code></div>
+          <div class="suggest"><em>Move to env (--dart-define) or a secure key store; never commit secrets</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill crit">CRITICAL</span></td>
+        <td><code>hardcoded_secret</code></td>
+        <td><code class="path">lib/services/auth_service.dart:8</code></td>
+        <td>
+          <div class="msg">Possible hardcoded secret in `authToken`</div>
+          <div class="snippet"><code>String authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.abc.def_long_value';</code></div>
+          <div class="suggest"><em>Move to env (--dart-define) or a secure key store; never commit secrets</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill high">ERROR</span></td>
+        <td><code>unsafe_storage</code></td>
+        <td><code class="path">lib/services/auth_service.dart:12</code></td>
+        <td>
+          <div class="msg">Sensitive value 'auth_token' stored in unencrypted store</div>
+          <div class="snippet"><code>await prefs.setString('auth_token', token);</code></div>
+          <div class="suggest"><em>Use flutter_secure_storage for tokens, passwords and similar data</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill high">ERROR</span></td>
+        <td><code>unsafe_storage</code></td>
+        <td><code class="path">lib/services/auth_service.dart:14</code></td>
+        <td>
+          <div class="msg">Sensitive value 'user_password' stored in unencrypted store</div>
+          <div class="snippet"><code>await prefs.setString('user_password', 'plaintext-pw');</code></div>
+          <div class="suggest"><em>Use flutter_secure_storage for tokens, passwords and similar data</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>insecure_http</code></td>
+        <td><code class="path">lib/services/api_service.dart:6</code></td>
+        <td>
+          <div class="msg">Insecure http:// URL: http://api.example-bad.com/v1</div>
+          <div class="snippet"><code>static const String baseUrl = 'http://api.example-bad.com/v1';</code></div>
+          <div class="suggest"><em>Use https:// instead</em></div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 class="cat-h3">Memory <span class="cat-count">5 issues</span></h3>
+  <table>
+    <thead><tr><th>Severity</th><th>Rule</th><th>Location</th><th>Message</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="pill high">ERROR</span></td>
+        <td><code>dispose_controllers</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:15</code></td>
+        <td>
+          <div class="msg">TextEditingController `searchController` is never disposed</div>
+          <div class="snippet"><code>final TextEditingController searchController = TextEditingController();</code></div>
+          <div class="suggest"><em>Override `dispose()` and call `searchController.dispose()` before `super.dispose()`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill high">ERROR</span></td>
+        <td><code>dispose_controllers</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:16</code></td>
+        <td>
+          <div class="msg">ScrollController `scrollController` is never disposed</div>
+          <div class="snippet"><code>final ScrollController scrollController = ScrollController();</code></div>
+          <div class="suggest"><em>Override `dispose()` and call `scrollController.dispose()` before `super.dispose()`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill high">ERROR</span></td>
+        <td><code>dispose_controllers</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:22</code></td>
+        <td>
+          <div class="msg">StreamController `events` is never disposed</div>
+          <div class="snippet"><code>final StreamController&lt;String&gt; events = StreamController&lt;String&gt;.broadcast();</code></div>
+          <div class="suggest"><em>Override `dispose()` and call `events.dispose()` before `super.dispose()`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill high">ERROR</span></td>
+        <td><code>cancel_subscriptions</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:19</code></td>
+        <td>
+          <div class="msg">StreamSubscription `ticker` is never cancelled</div>
+          <div class="snippet"><code>StreamSubscription&lt;int&gt;? ticker;</code></div>
+          <div class="suggest"><em>In dispose(), call `ticker.cancel();`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill high">ERROR</span></td>
+        <td><code>close_sinks</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:22</code></td>
+        <td>
+          <div class="msg">StreamController `events` is never closed</div>
+          <div class="snippet"><code>final StreamController&lt;String&gt; events = StreamController&lt;String&gt;.broadcast();</code></div>
+          <div class="suggest"><em>In dispose(), call `events.close();`</em></div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 class="cat-h3">Architecture <span class="cat-count">3 issues</span></h3>
+  <table>
+    <thead><tr><th>Severity</th><th>Rule</th><th>Location</th><th>Message</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>huge_build_method</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:41</code></td>
+        <td>
+          <div class="msg">build() spans 102 lines (limit 80)</div>
+          <div class="snippet"><code>Widget build(BuildContext context) {</code></div>
+          <div class="suggest"><em>Extract subtrees into small widgets — each one is easier to read and can be const</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>deep_widget_nesting</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:41</code></td>
+        <td>
+          <div class="msg">Widget tree nested 13 levels (limit 10)</div>
+          <div class="snippet"><code>Widget build(BuildContext context) {</code></div>
+          <div class="suggest"><em>Extract inner widgets into named subwidgets</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill high">ERROR</span></td>
+        <td><code>business_logic_in_widget</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:31</code></td>
+        <td>
+          <div class="msg">Business logic (http.get()) inside widget class `_FeedScreenState`</div>
+          <div class="snippet"><code>http.get(Uri.parse('https://api.realbad-flutter.com/feed'));</code></div>
+          <div class="suggest"><em>Move to a service / repository and inject it; keep widgets UI-only</em></div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 class="cat-h3">API <span class="cat-count">4 issues</span></h3>
+  <table>
+    <thead><tr><th>Severity</th><th>Rule</th><th>Location</th><th>Message</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="pill low">INFO</span></td>
+        <td><code>hardcoded_url</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:31</code></td>
+        <td>
+          <div class="msg">Hardcoded URL in source: https://api.realbad-flutter.com/feed</div>
+          <div class="snippet"><code>http.get(Uri.parse('https://api.realbad-flutter.com/feed'));</code></div>
+          <div class="suggest"><em>Move URLs to a config file (e.g. lib/config/api_endpoints.dart)</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill low">INFO</span></td>
+        <td><code>hardcoded_url</code></td>
+        <td><code class="path">lib/services/api_service.dart:6</code></td>
+        <td>
+          <div class="msg">Hardcoded URL in source: http://api.example-bad.com/v1</div>
+          <div class="snippet"><code>static const String baseUrl = 'http://api.example-bad.com/v1';</code></div>
+          <div class="suggest"><em>Move URLs to a config file (e.g. lib/config/api_endpoints.dart)</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>print_in_production</code></td>
+        <td><code class="path">lib/services/api_service.dart:15</code></td>
+        <td>
+          <div class="msg">print() statement in production code</div>
+          <div class="snippet"><code>print('Fetched user $id -&gt; status ${response.statusCode}');</code></div>
+          <div class="suggest"><em>Use a logger (package:logging) or debugPrint()</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_try_catch</code></td>
+        <td><code class="path">lib/services/api_service.dart:12</code></td>
+        <td>
+          <div class="msg">Network call not wrapped in try/catch</div>
+          <div class="snippet"><code>final response = await http.get(Uri.parse('$baseUrl/users/$id'));</code></div>
+          <div class="suggest"><em>Wrap in try/catch and surface the error to the user / logger</em></div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 class="cat-h3">Performance <span class="cat-count">65 issues</span></h3>
+  <table>
+    <thead><tr><th>Severity</th><th>Rule</th><th>Location</th><th>Message</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:45</code></td>
+        <td>
+          <div class="msg">`Text` can be marked const</div>
+          <div class="snippet"><code>appBar: AppBar(title: Text('Feed')),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const Text(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:47</code></td>
+        <td>
+          <div class="msg">`EdgeInsets.all` can be marked const</div>
+          <div class="snippet"><code>padding: EdgeInsets.all(16),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const EdgeInsets.all(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:59</code></td>
+        <td>
+          <div class="msg">`EdgeInsets.all` can be marked const</div>
+          <div class="snippet"><code>padding: EdgeInsets.all(4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const EdgeInsets.all(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:63</code></td>
+        <td>
+          <div class="msg">`EdgeInsets.all` can be marked const</div>
+          <div class="snippet"><code>padding: EdgeInsets.all(2),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const EdgeInsets.all(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:66</code></td>
+        <td>
+          <div class="msg">`Icon` can be marked const</div>
+          <div class="snippet"><code>Icon(Icons.search),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const Icon(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:70</code></td>
+        <td>
+          <div class="msg">`TextStyle` can be marked const</div>
+          <div class="snippet"><code>style: TextStyle(</code></div>
+          <div class="suggest"><em>Add the const keyword: `const TextStyle(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:86</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 12),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:88</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:89</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:90</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:91</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:92</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:93</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:94</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:95</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:96</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:97</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:98</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:99</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:100</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:101</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:102</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:103</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:104</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:105</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:106</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:107</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:108</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:109</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:110</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:111</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:112</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:113</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:114</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:115</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:116</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:117</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 4),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:124</code></td>
+        <td>
+          <div class="msg">`Text` can be marked const</div>
+          <div class="snippet"><code>Text('Header'),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const Text(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:126</code></td>
+        <td>
+          <div class="msg">`Text` can be marked const</div>
+          <div class="snippet"><code>ListTile(title: Text('Footer 1')),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const Text(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:127</code></td>
+        <td>
+          <div class="msg">`Text` can be marked const</div>
+          <div class="snippet"><code>ListTile(title: Text('Footer 2')),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const Text(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:128</code></td>
+        <td>
+          <div class="msg">`Text` can be marked const</div>
+          <div class="snippet"><code>ListTile(title: Text('Footer 3')),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const Text(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:129</code></td>
+        <td>
+          <div class="msg">`Text` can be marked const</div>
+          <div class="snippet"><code>ListTile(title: Text('Footer 4')),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const Text(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:130</code></td>
+        <td>
+          <div class="msg">`Text` can be marked const</div>
+          <div class="snippet"><code>ListTile(title: Text('Footer 5')),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const Text(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:131</code></td>
+        <td>
+          <div class="msg">`Text` can be marked const</div>
+          <div class="snippet"><code>ListTile(title: Text('Footer 6')),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const Text(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:132</code></td>
+        <td>
+          <div class="msg">`Text` can be marked const</div>
+          <div class="snippet"><code>ListTile(title: Text('Footer 7')),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const Text(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:133</code></td>
+        <td>
+          <div class="msg">`Text` can be marked const</div>
+          <div class="snippet"><code>ListTile(title: Text('Footer 8')),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const Text(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/main.dart:4</code></td>
+        <td>
+          <div class="msg">`MyApp` can be marked const</div>
+          <div class="snippet"><code>runApp(MyApp());</code></div>
+          <div class="suggest"><em>Add the const keyword: `const MyApp(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/main.dart:14</code></td>
+        <td>
+          <div class="msg">`HomeScreen` can be marked const</div>
+          <div class="snippet"><code>home: HomeScreen(),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const HomeScreen(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/main.dart:25</code></td>
+        <td>
+          <div class="msg">`Text` can be marked const</div>
+          <div class="snippet"><code>appBar: AppBar(title: Text('Issues Demo')),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const Text(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/main.dart:27</code></td>
+        <td>
+          <div class="msg">`EdgeInsets.all` can be marked const</div>
+          <div class="snippet"><code>padding: EdgeInsets.all(16),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const EdgeInsets.all(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/main.dart:31</code></td>
+        <td>
+          <div class="msg">`Text` can be marked const</div>
+          <div class="snippet"><code>Text('Hello, world'),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const Text(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/main.dart:32</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 12),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/main.dart:33</code></td>
+        <td>
+          <div class="msg">`Text` can be marked const</div>
+          <div class="snippet"><code>Text('None of these widgets are const.'),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const Text(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/main.dart:34</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(height: 24),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/main.dart:35</code></td>
+        <td>
+          <div class="msg">`Icon` can be marked const</div>
+          <div class="snippet"><code>Icon(Icons.warning, size: 48),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const Icon(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/widgets/profile_card.dart:10</code></td>
+        <td>
+          <div class="msg">`EdgeInsets.all` can be marked const</div>
+          <div class="snippet"><code>padding: EdgeInsets.all(12),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const EdgeInsets.all(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/widgets/profile_card.dart:13</code></td>
+        <td>
+          <div class="msg">`Icon` can be marked const</div>
+          <div class="snippet"><code>CircleAvatar(child: Icon(Icons.person)),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const Icon(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/widgets/profile_card.dart:14</code></td>
+        <td>
+          <div class="msg">`SizedBox` can be marked const</div>
+          <div class="snippet"><code>SizedBox(width: 12),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const SizedBox(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/widgets/profile_card.dart:15</code></td>
+        <td>
+          <div class="msg">`Text` can be marked const</div>
+          <div class="snippet"><code>Text('Jane Doe'),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const Text(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/widgets/settings_tile.dart:9</code></td>
+        <td>
+          <div class="msg">`Icon` can be marked const</div>
+          <div class="snippet"><code>leading: Icon(Icons.settings),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const Icon(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/widgets/settings_tile.dart:10</code></td>
+        <td>
+          <div class="msg">`Text` can be marked const</div>
+          <div class="snippet"><code>title: Text('Settings'),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const Text(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/widgets/settings_tile.dart:11</code></td>
+        <td>
+          <div class="msg">`Text` can be marked const</div>
+          <div class="snippet"><code>subtitle: Text('Tap to configure'),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const Text(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>missing_const</code></td>
+        <td><code class="path">lib/widgets/settings_tile.dart:12</code></td>
+        <td>
+          <div class="msg">`Icon` can be marked const</div>
+          <div class="snippet"><code>trailing: Icon(Icons.chevron_right),</code></div>
+          <div class="suggest"><em>Add the const keyword: `const Icon(...)`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>avoid_foreach</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:37</code></td>
+        <td>
+          <div class="msg">Prefer `for (final x in iterable)` over `.forEach(closure)`</div>
+          <div class="snippet"><code>[1, 2, 3].forEach((i) =&gt; items.add('item-$i'));</code></div>
+          <div class="suggest"><em>Replace with: `for (final item in iterable) { ... }`</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>prefer_listview_builder</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:121</code></td>
+        <td>
+          <div class="msg">ListView with 10 eager children — use ListView.builder</div>
+          <div class="snippet"><code>child: ListView(</code></div>
+          <div class="suggest"><em>Switch to `ListView.builder(itemCount: …, itemBuilder: (ctx, i) =&gt; …)`</em></div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 class="cat-h3">UI <span class="cat-count">13 issues</span></h3>
+  <table>
+    <thead><tr><th>Severity</th><th>Rule</th><th>Location</th><th>Message</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="pill low">INFO</span></td>
+        <td><code>missing_key_in_list</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:124</code></td>
+        <td>
+          <div class="msg">Dynamic list item `Text` has no key — state may shuffle on reorder</div>
+          <div class="snippet"><code>Text('Header'),</code></div>
+          <div class="suggest"><em>Pass `key: ValueKey(item.id)` (or similar stable id)</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill low">INFO</span></td>
+        <td><code>missing_key_in_list</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:125</code></td>
+        <td>
+          <div class="msg">Dynamic list item `ListTile` has no key — state may shuffle on reorder</div>
+          <div class="snippet"><code>for (final item in items) ListTile(title: Text(item)),</code></div>
+          <div class="suggest"><em>Pass `key: ValueKey(item.id)` (or similar stable id)</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill low">INFO</span></td>
+        <td><code>missing_key_in_list</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:126</code></td>
+        <td>
+          <div class="msg">Dynamic list item `ListTile` has no key — state may shuffle on reorder</div>
+          <div class="snippet"><code>ListTile(title: Text('Footer 1')),</code></div>
+          <div class="suggest"><em>Pass `key: ValueKey(item.id)` (or similar stable id)</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill low">INFO</span></td>
+        <td><code>missing_key_in_list</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:127</code></td>
+        <td>
+          <div class="msg">Dynamic list item `ListTile` has no key — state may shuffle on reorder</div>
+          <div class="snippet"><code>ListTile(title: Text('Footer 2')),</code></div>
+          <div class="suggest"><em>Pass `key: ValueKey(item.id)` (or similar stable id)</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill low">INFO</span></td>
+        <td><code>missing_key_in_list</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:128</code></td>
+        <td>
+          <div class="msg">Dynamic list item `ListTile` has no key — state may shuffle on reorder</div>
+          <div class="snippet"><code>ListTile(title: Text('Footer 3')),</code></div>
+          <div class="suggest"><em>Pass `key: ValueKey(item.id)` (or similar stable id)</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill low">INFO</span></td>
+        <td><code>missing_key_in_list</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:129</code></td>
+        <td>
+          <div class="msg">Dynamic list item `ListTile` has no key — state may shuffle on reorder</div>
+          <div class="snippet"><code>ListTile(title: Text('Footer 4')),</code></div>
+          <div class="suggest"><em>Pass `key: ValueKey(item.id)` (or similar stable id)</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill low">INFO</span></td>
+        <td><code>missing_key_in_list</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:130</code></td>
+        <td>
+          <div class="msg">Dynamic list item `ListTile` has no key — state may shuffle on reorder</div>
+          <div class="snippet"><code>ListTile(title: Text('Footer 5')),</code></div>
+          <div class="suggest"><em>Pass `key: ValueKey(item.id)` (or similar stable id)</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill low">INFO</span></td>
+        <td><code>missing_key_in_list</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:131</code></td>
+        <td>
+          <div class="msg">Dynamic list item `ListTile` has no key — state may shuffle on reorder</div>
+          <div class="snippet"><code>ListTile(title: Text('Footer 6')),</code></div>
+          <div class="suggest"><em>Pass `key: ValueKey(item.id)` (or similar stable id)</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill low">INFO</span></td>
+        <td><code>missing_key_in_list</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:132</code></td>
+        <td>
+          <div class="msg">Dynamic list item `ListTile` has no key — state may shuffle on reorder</div>
+          <div class="snippet"><code>ListTile(title: Text('Footer 7')),</code></div>
+          <div class="suggest"><em>Pass `key: ValueKey(item.id)` (or similar stable id)</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill low">INFO</span></td>
+        <td><code>missing_key_in_list</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:133</code></td>
+        <td>
+          <div class="msg">Dynamic list item `ListTile` has no key — state may shuffle on reorder</div>
+          <div class="snippet"><code>ListTile(title: Text('Footer 8')),</code></div>
+          <div class="suggest"><em>Pass `key: ValueKey(item.id)` (or similar stable id)</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill low">INFO</span></td>
+        <td><code>avoid_inline_text_style</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:70</code></td>
+        <td>
+          <div class="msg">Inline TextStyle hardcodes color, fontSize, fontWeight</div>
+          <div class="snippet"><code>style: TextStyle(</code></div>
+          <div class="suggest"><em>Move to ThemeData.textTheme and use Theme.of(context).textTheme.*</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill low">INFO</span></td>
+        <td><code>hardcoded_size</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:52</code></td>
+        <td>
+          <div class="msg">Hardcoded width: 350 — won't adapt to screen size</div>
+          <div class="snippet"><code>width: 350,</code></div>
+          <div class="suggest"><em>Use MediaQuery.of(context).size or a Flexible/Expanded layout</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill low">INFO</span></td>
+        <td><code>hardcoded_size</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:53</code></td>
+        <td>
+          <div class="msg">Hardcoded height: 220 — won't adapt to screen size</div>
+          <div class="snippet"><code>height: 220,</code></div>
+          <div class="suggest"><em>Use MediaQuery.of(context).size or a Flexible/Expanded layout</em></div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 class="cat-h3">Quality <span class="cat-count">5 issues</span></h3>
+  <table>
+    <thead><tr><th>Severity</th><th>Rule</th><th>Location</th><th>Message</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="pill low">INFO</span></td>
+        <td><code>todo_comment</code></td>
+        <td><code class="path">lib/utils/helpers.dart:2</code></td>
+        <td>
+          <div class="msg">// TODO: refactor the everything-helper into focused units.</div>
+          <div class="snippet"><code>// TODO: refactor the everything-helper into focused units.</code></div>
+          <div class="suggest"><em>Resolve the TODO or file an issue and reference it</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill low">INFO</span></td>
+        <td><code>todo_comment</code></td>
+        <td><code class="path">lib/utils/helpers.dart:3</code></td>
+        <td>
+          <div class="msg">// FIXME: stop using this for new code.</div>
+          <div class="snippet"><code>// FIXME: stop using this for new code.</code></div>
+          <div class="suggest"><em>Resolve the TODO or file an issue and reference it</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill low">INFO</span></td>
+        <td><code>todo_comment</code></td>
+        <td><code class="path">lib/screens/feed_screen.dart:137</code></td>
+        <td>
+          <div class="msg">// TODO: paginate the list eventually.</div>
+          <div class="snippet"><code>// TODO: paginate the list eventually.</code></div>
+          <div class="suggest"><em>Resolve the TODO or file an issue and reference it</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill low">INFO</span></td>
+        <td><code>long_method</code></td>
+        <td><code class="path">lib/utils/helpers.dart:5</code></td>
+        <td>
+          <div class="msg">Method `doManyThings` spans 71 lines (limit 60)</div>
+          <div class="snippet"><code>int doManyThings(List&lt;int&gt; input) {</code></div>
+          <div class="suggest"><em>Split into smaller, named helpers</em></div>
+        </td>
+      </tr>
+      <tr>
+        <td><span class="pill med">WARNING</span></td>
+        <td><code>empty_catch</code></td>
+        <td><code class="path">lib/services/api_service.dart:23</code></td>
+        <td>
+          <div class="msg">Empty catch block — error is silently discarded</div>
+          <div class="snippet"><code>} catch (_) {</code></div>
+          <div class="suggest"><em>At minimum, log the error or rethrow</em></div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="card">
+  <h2><span class="num">4</span> Top issues to fix first</h2>
+  <p class="lead">Ten highest-severity findings — start here.</p>
+  <ol class="top-list">
+    <li>
+      <div class="top-head"><span class="pill crit">CRITICAL</span> <code class="path">lib/services/auth_service.dart:5</code></div>
+      <div class="top-msg">Possible hardcoded secret in `apiKey`</div>
+      <pre>static const String apiKey = 'sk_live_AKIA1234567890ABCDEFG';</pre>
+      <div class="top-fix"><strong>Fix:</strong> Move to env (--dart-define) or a secure key store; never commit secrets</div>
+    </li>
+    <li>
+      <div class="top-head"><span class="pill crit">CRITICAL</span> <code class="path">lib/services/auth_service.dart:8</code></div>
+      <div class="top-msg">Possible hardcoded secret in `authToken`</div>
+      <pre>String authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.abc.def_long_value';</pre>
+      <div class="top-fix"><strong>Fix:</strong> Move to env (--dart-define) or a secure key store; never commit secrets</div>
+    </li>
+    <li>
+      <div class="top-head"><span class="pill high">ERROR</span> <code class="path">lib/screens/feed_screen.dart:15</code></div>
+      <div class="top-msg">TextEditingController `searchController` is never disposed</div>
+      <pre>final TextEditingController searchController = TextEditingController();</pre>
+      <div class="top-fix"><strong>Fix:</strong> Override `dispose()` and call `searchController.dispose()` before `super.dispose()`</div>
+    </li>
+    <li>
+      <div class="top-head"><span class="pill high">ERROR</span> <code class="path">lib/screens/feed_screen.dart:16</code></div>
+      <div class="top-msg">ScrollController `scrollController` is never disposed</div>
+      <pre>final ScrollController scrollController = ScrollController();</pre>
+      <div class="top-fix"><strong>Fix:</strong> Override `dispose()` and call `scrollController.dispose()` before `super.dispose()`</div>
+    </li>
+    <li>
+      <div class="top-head"><span class="pill high">ERROR</span> <code class="path">lib/screens/feed_screen.dart:22</code></div>
+      <div class="top-msg">StreamController `events` is never disposed</div>
+      <pre>final StreamController&lt;String&gt; events = StreamController&lt;String&gt;.broadcast();</pre>
+      <div class="top-fix"><strong>Fix:</strong> Override `dispose()` and call `events.dispose()` before `super.dispose()`</div>
+    </li>
+    <li>
+      <div class="top-head"><span class="pill high">ERROR</span> <code class="path">lib/screens/feed_screen.dart:19</code></div>
+      <div class="top-msg">StreamSubscription `ticker` is never cancelled</div>
+      <pre>StreamSubscription&lt;int&gt;? ticker;</pre>
+      <div class="top-fix"><strong>Fix:</strong> In dispose(), call `ticker.cancel();`</div>
+    </li>
+    <li>
+      <div class="top-head"><span class="pill high">ERROR</span> <code class="path">lib/screens/feed_screen.dart:22</code></div>
+      <div class="top-msg">StreamController `events` is never closed</div>
+      <pre>final StreamController&lt;String&gt; events = StreamController&lt;String&gt;.broadcast();</pre>
+      <div class="top-fix"><strong>Fix:</strong> In dispose(), call `events.close();`</div>
+    </li>
+    <li>
+      <div class="top-head"><span class="pill high">ERROR</span> <code class="path">lib/screens/feed_screen.dart:31</code></div>
+      <div class="top-msg">Business logic (http.get()) inside widget class `_FeedScreenState`</div>
+      <pre>http.get(Uri.parse('https://api.realbad-flutter.com/feed'));</pre>
+      <div class="top-fix"><strong>Fix:</strong> Move to a service / repository and inject it; keep widgets UI-only</div>
+    </li>
+    <li>
+      <div class="top-head"><span class="pill high">ERROR</span> <code class="path">lib/services/auth_service.dart:14</code></div>
+      <div class="top-msg">Sensitive value 'user_password' stored in unencrypted store</div>
+      <pre>await prefs.setString('user_password', 'plaintext-pw');</pre>
+      <div class="top-fix"><strong>Fix:</strong> Use flutter_secure_storage for tokens, passwords and similar data</div>
+    </li>
+    <li>
+      <div class="top-head"><span class="pill high">ERROR</span> <code class="path">lib/services/auth_service.dart:12</code></div>
+      <div class="top-msg">Sensitive value 'auth_token' stored in unencrypted store</div>
+      <pre>await prefs.setString('auth_token', token);</pre>
+      <div class="top-fix"><strong>Fix:</strong> Use flutter_secure_storage for tokens, passwords and similar data</div>
+    </li>
+  </ol>
+</div>
+<div class="card">
+  <h2><span class="num">5</span> Appendix — scan inventory</h2>
+  <div class="grid2">
+    <div>
+      <h3>Stats</h3>
+      <ul class="tight">
+        <li>Files scanned: <strong>7</strong></li>
+        <li>Lines analysed: <strong>347</strong></li>
+        <li>Scan time: <strong>124 ms</strong></li>
+        <li>Total findings: <strong>100</strong></li>
+      </ul>
+    </div>
+    <div>
+      <h3>Findings by severity</h3>
+      <ul class="tight">
+        <li><span class="pill crit">CRITICAL</span> 2</li>
+        <li><span class="pill high">ERROR</span> 8</li>
+        <li><span class="pill med">WARNING</span> 71</li>
+        <li><span class="pill low">INFO</span> 19</li>
+      </ul>
+    </div>
+  </div>
+  <h3>How scoring works</h3>
+  <p class="footnote">
+    Each category begins at 100 and loses points per finding (info −1, warning −2, error −5, critical −10).
+    Scores floor at 0. The overall score is a weighted average that favours memory and security (1.5×)
+    over UI and code quality (0.8×).
+  </p>
+</div>
+<footer class="footer">
+  Generated by <code>flutter_audit</code> · 2026-05-21T17:27:23.156811
+</footer>
+</div>
+</body>
+</html>
