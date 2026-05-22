@@ -2,7 +2,7 @@ name: flutter_audit
 description: >-
   Static analysis CLI for Flutter projects. Audits performance, memory safety,
   security, API hygiene, architecture, UI quality, and code quality in one shot.
-version: 1.0.1
+version: 1.0.2
 repository: https://github.com/PriyanshuDotsquares/flutter_audit
 issue_tracker: https://github.com/PriyanshuDotsquares/flutter_audit/issues
 
